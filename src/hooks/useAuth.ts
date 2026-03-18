@@ -1,0 +1,52 @@
+import { useEffect, useState } from 'react'
+import type { User } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
+
+interface AuthState {
+  user: User | null
+  loading: boolean
+}
+
+export function useAuth(): AuthState {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Obtener sesión inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    // Escuchar cambios de auth
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  return { user, loading }
+}
+
+export async function signInWithMagicLink(email: string): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: window.location.origin,
+    },
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { error: null }
+}
+
+export async function signOut(): Promise<void> {
+  await supabase.auth.signOut()
+}
