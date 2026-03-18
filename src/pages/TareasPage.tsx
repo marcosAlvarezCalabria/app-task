@@ -30,14 +30,14 @@ export function TareasPage({ user }: TareasPageProps) {
   const [modalAbierto, setModalAbierto] = useState(false)
   const [tareaEditando, setTareaEditando] = useState<Tarea | undefined>()
 
-  const { data: tareas, isLoading, error, total } = useTareas(filtros)
+  const { data: tareas = [], isLoading, error } = useTareas(filtros)
+  const { data: todasLasTareas = [] } = useTareas()
+  const total = todasLasTareas.length
+
   const crearTarea = useCrearTarea()
   const actualizarTarea = useActualizarTarea()
   const eliminarTarea = useEliminarTarea()
   const toggleEstado = useToggleEstado()
-
-  // Tareas sin filtrar para extraer tags disponibles
-  const { data: todasLasTareas } = useTareas()
   const tagsDisponibles = useTagsDisponibles(todasLasTareas ?? [])
 
   const abrirModalCrear = () => {

@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { Tarea, TareaInput, FiltrosTareas, Prioridad, Estado } from '../types'
-import { filtrarTareas } from '../lib/utils'
+import { filtrarTareas, extraerTagsUnicos } from '../lib/utils'
 
-export function useTareas(filtros: FiltrosTareas) {
+export function useTareas(filtros?: FiltrosTareas) {
   return useQuery({
     queryKey: ['tareas'],
     queryFn: async () => {
@@ -19,7 +19,7 @@ export function useTareas(filtros: FiltrosTareas) {
       if (error) throw new Error(error.message)
       return data as Tarea[]
     },
-    select: (data) => filtrarTareas(data, filtros)
+    select: (data) => filtros ? filtrarTareas(data, filtros) : data
   })
 }
 
@@ -116,10 +116,6 @@ export function useToggleEstado() {
   })
 }
 
-export function useTagsDisponibles() {
-  const { data: tareas } = useQuery({
-    queryKey: ['tareas'],
-    queryFn: async () => []
-  })
-  return []
+export function useTagsDisponibles(tareas: Tarea[]) {
+  return extraerTagsUnicos(tareas)
 }
