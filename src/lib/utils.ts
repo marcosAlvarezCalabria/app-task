@@ -18,7 +18,7 @@ export function filtrarTareas(tareas: Tarea[], filtros: FiltrosTareas): Tarea[] 
 
     // Filtro por tag
     if (filtros.tag && filtros.tag.trim() !== '') {
-      if (!tarea.tags.includes(filtros.tag)) return false
+      if (!(tarea.tags || []).includes(filtros.tag)) return false
     }
 
     // Filtro por búsqueda de texto libre
@@ -26,7 +26,7 @@ export function filtrarTareas(tareas: Tarea[], filtros: FiltrosTareas): Tarea[] 
       const busqueda = filtros.busqueda.toLowerCase()
       const enTitulo = tarea.titulo.toLowerCase().includes(busqueda)
       const enDescripcion = tarea.descripcion?.toLowerCase().includes(busqueda) ?? false
-      const enTags = tarea.tags.some((tag) => tag.toLowerCase().includes(busqueda))
+      const enTags = (tarea.tags || []).some((tag) => tag.toLowerCase().includes(busqueda))
       if (!enTitulo && !enDescripcion && !enTags) return false
     }
 
@@ -39,6 +39,6 @@ export function filtrarTareas(tareas: Tarea[], filtros: FiltrosTareas): Tarea[] 
  */
 export function extraerTagsUnicos(tareas: Tarea[]): string[] {
   const tagsSet = new Set<string>()
-  tareas.forEach((tarea) => tarea.tags.forEach((tag) => tagsSet.add(tag)))
+  tareas.forEach((tarea) => (tarea.tags || []).forEach((tag) => tagsSet.add(tag)))
   return Array.from(tagsSet).sort()
 }

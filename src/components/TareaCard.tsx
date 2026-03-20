@@ -142,9 +142,9 @@ export function TareaCard({ tarea, onToggle, onEditar, onEliminar }: TareaCardPr
             </div>
 
             {/* Tags */}
-            {tarea.tags.length > 0 && (
+            {(tarea.tags?.length || 0) > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {tarea.tags.map((tag) => (
+                {(tarea.tags || []).map((tag) => (
                   <span
                     key={tag}
                     className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-xs"
